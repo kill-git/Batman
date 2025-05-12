@@ -68,7 +68,7 @@ def create_model_input_table(
     return model_input_table
 
 # src/eco2mix_forecasting/pipelines/data_download/nodes.py
-from src.superman_mspr.pipelines.data_science.nodes import fetch_eCO2mix_data, convert_all_xls_eCO2mix_data
+from src.Batman_mspr.pipelines.data_science.nodes import fetch_eCO2mix_data, convert_all_xls_eCO2mix_data
 
 def fetch_data_node(destination_folder: str):
     """ Télécharge les fichiers eCO2mix """
@@ -80,7 +80,7 @@ def convert_data_node(xls_path: str, csv_path: str):
 
 # src/eco2mix_forecasting/pipelines/data_preprocessing/nodes.py
 import pandas as pd
-from src.superman_mspr.pipelines.data_science.nodes import clean_data, merge_data
+from src.Batman_mspr.pipelines.data_science.nodes import clean_data, merge_data
 
 def clean_data_node(raw_data: pd.DataFrame) -> pd.DataFrame:
     """ Nettoie les données brutes """
