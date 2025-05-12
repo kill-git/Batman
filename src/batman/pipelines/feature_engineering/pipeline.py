@@ -13,6 +13,6 @@ def create_pipeline(**kwargs):
             func=final_feature_cleaning_node,
             inputs="features_raw",
             outputs="final_data",
-            name="final_feature_cleaning"
+            name="clean_engineered_data"
         ),
     ])

@@ -1,0 +1,23 @@
+# data_download
+xls_path: data/01_raw/
+csv_path: data/01_raw/
+destination_folder: data/01_raw/
+
+# data_preprocessing
+path_annual: data/01_raw/
+path_tempo: data/01_raw/
+
+# training
+train:
+  target: "Consommation"
+  use_optuna: true
+  n_trials: 30
+  run_name: "xgboost_run"
+  validation_type: "time_series_cv"
+  walkforward_initial_train_size: 3000
+  walkforward_test_size: 24
+  threshold_rmse: 300
+  model_params:
+    n_estimators: 100
+    learning_rate: 0.1
+    max_depth: 6
