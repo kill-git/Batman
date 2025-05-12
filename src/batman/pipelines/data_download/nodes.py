@@ -1,4 +1,4 @@
-from core.data_preprocessing import fetch_eCO2mix_data, convert_all_xls_eCO2mix_data
+from batman.core.data_preprocessing import fetch_eCO2mix_data, convert_all_xls_eCO2mix_data
 
 def fetch_data_node(destination_folder: str):
     fetch_eCO2mix_data(destination_folder)

@@ -1,5 +1,5 @@
-from core.model_training import full_train_evaluate_pipeline, train_xgboost_model
-from core.optuna_optimization import xgboost_search_space
+from batman.core.model_training import full_train_evaluate_pipeline, train_xgboost_model
+from batman.core.optuna_optimization import xgboost_search_space
 import mlflow
 import mlflow.sklearn
 

@@ -48,3 +48,6 @@ attr = "batman.__version__"
 [tool.setuptools.packages.find]
 where = [ "src",]
 namespaces = false
+
+[tool.kedro_telemetry]
+project_id = "b05d4a569a50448b989ee1715fbfda5e"

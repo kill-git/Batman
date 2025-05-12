@@ -4,9 +4,9 @@ from sklearn.neighbors import KNeighborsRegressor
 
 import xgboost as xgb
 
-from src.evaluation import evaluate_model_timeseries_cv, print_evaluation_metrics, walk_forward_validation
-from src.optuna_optimization import optimize_model_with_optuna, generate_full_report
-from src.run_logger import log_run
+from batman.core.evaluation import evaluate_model_timeseries_cv, print_evaluation_metrics, walk_forward_validation
+from batman.core.optuna_optimization import optimize_model_with_optuna, generate_full_report
+from batman.core.run_logger import log_run
 
 import pandas as pd
 import joblib

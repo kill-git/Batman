@@ -7,7 +7,7 @@ import pandas as pd
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_squared_error
 
-from src.utils import plot_model_predictions, plot_residual_errors
+from batman.core.utils import plot_model_predictions, plot_residual_errors
 
 def generate_full_report(model, X_test, y_test, study=None, datetimes=None, num_points=300):
     """
