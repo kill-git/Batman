@@ -6,7 +6,11 @@ import mlflow.sklearn
 def train_and_evaluate_node(data, params):
     X = data.drop(columns=[params["target"]])
     y = data[params["target"]]
-
+    # 👇 CONFIG MLflow manuelle ici
+    
+    mlflow.set_tracking_uri("http://localhost:5000")
+    mlflow.set_experiment("batman_experiment")
+    
     with mlflow.start_run(run_name=params.get("run_name", "DefaultRun")):
         model, cv_results = full_train_evaluate_pipeline(
             model_fn=train_xgboost_model,

@@ -1,5 +1,0 @@
-experiment:
-  name: batman_experiment
-
-tracking:
-  uri: http://localhost:5000
