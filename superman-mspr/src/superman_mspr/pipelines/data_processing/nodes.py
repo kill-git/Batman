@@ -66,3 +66,28 @@ def create_model_input_table(
     )
     model_input_table = model_input_table.dropna()
     return model_input_table
+
+# src/eco2mix_forecasting/pipelines/data_download/nodes.py
+from src.superman_mspr.pipelines.data_science.nodes import fetch_eCO2mix_data, convert_all_xls_eCO2mix_data
+
+def fetch_data_node(destination_folder: str):
+    """ Télécharge les fichiers eCO2mix """
+    return fetch_eCO2mix_data(destination_folder)
+
+def convert_data_node(xls_path: str, csv_path: str):
+    """ Convertit les fichiers XLS en CSV """
+    return convert_all_xls_eCO2mix_data(xls_path, csv_path)
+
+# src/eco2mix_forecasting/pipelines/data_preprocessing/nodes.py
+import pandas as pd
+from src.superman_mspr.pipelines.data_science.nodes import clean_data, merge_data
+
+def clean_data_node(raw_data: pd.DataFrame) -> pd.DataFrame:
+    """ Nettoie les données brutes """
+    return clean_data(raw_data)
+
+def merge_data_node(data_1: pd.DataFrame, data_2: pd.DataFrame) -> pd.DataFrame:
+    """ Fusionne deux ensembles de données """
+    return merge_data(data_1, data_2)
+
+
