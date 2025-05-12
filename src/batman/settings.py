@@ -44,3 +44,7 @@ CONFIG_LOADER_ARGS = {
 # Class that manages the Data Catalog.
 # from kedro.io import DataCatalog
 # DATA_CATALOG_CLASS = DataCatalog
+
+from batman.hooks import mlflow_hook
+
+HOOKS  = (mlflow_hook,)
