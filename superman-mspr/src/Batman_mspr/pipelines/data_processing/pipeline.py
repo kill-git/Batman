@@ -5,7 +5,7 @@ from .nodes import create_model_input_table, preprocess_companies, preprocess_sh
 from kedro.pipeline import Pipeline, node
 from .nodes import fetch_data_node, convert_data_node
 
-
+#pipeline de transformations de la donnée
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline(
         [
