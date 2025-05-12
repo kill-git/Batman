@@ -1,5 +1,5 @@
-mlflow:
-  experiment:
-    name: batman
-  tracking:
-    uri: http://localhost:5000
+experiment:
+  name: batman_experiment
+
+tracking:
+  uri: http://localhost:5000
