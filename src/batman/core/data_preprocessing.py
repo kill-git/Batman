@@ -268,7 +268,7 @@ def concat_eCO2mix_tempo_data(path_tempo):
     Retourne :
     - DataFrame concaténé.
     """
-    tempo_pattern = os.path.join(path_tempo, "eCO2mix_RTE_tempo_20*-20*.csv")
+    tempo_pattern = os.path.join(path_tempo, "/data/01_raw")
     tempo_files = sorted(glob.glob(tempo_pattern))
     list_df_tempo = []
     # Assertion pour vérifier que tous les fichiers existent
