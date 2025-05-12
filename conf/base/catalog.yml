@@ -2,3 +2,33 @@
 #
 # Documentation for this file format can be found in "The Data Catalog"
 # Link: https://docs.kedro.org/en/stable/data/data_catalog.html
+# Data Preprocessing
+annual_data:
+  type: pandas.ParquetDataSet
+  filepath: data/01_raw/annual_data.parquet
+
+tempo_data:
+  type: pandas.ParquetDataSet
+  filepath: data/01_raw/tempo_data.parquet
+
+merged_data_raw:
+  type: pandas.ParquetDataSet
+  filepath: data/02_intermediate/merged_data_raw.parquet
+
+merged_data:
+  type: pandas.ParquetDataSet
+  filepath: data/02_intermediate/merged_data.parquet
+
+# Feature Engineering
+features_raw:
+  type: pandas.ParquetDataSet
+  filepath: data/02_intermediate/features_raw.parquet
+
+final_data:
+  type: pandas.ParquetDataSet
+  filepath: data/03_primary/final_data.parquet
+
+# Training
+trained_model:
+  type: pickle.PickleDataSet
+  filepath: data/06_models/trained_model.pkl
