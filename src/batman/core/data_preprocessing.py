@@ -12,6 +12,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 def fetch_eCO2mix_data(destination_folder="../data/external/"):
     """
     Télécharge et extrait tous les fichiers ZIP de la div .eco2mix-download-data
@@ -30,7 +34,7 @@ def fetch_eCO2mix_data(destination_folder="../data/external/"):
     driver = webdriver.Chrome(options=chrome_opts)
 
     try:
-        print(f"🌐 Chargement de {page_url}")
+        logger.info(f"🌐 Chargement de {page_url}")
         driver.get(page_url)
         driver.implicitly_wait(10)
 
@@ -47,14 +51,14 @@ def fetch_eCO2mix_data(destination_folder="../data/external/"):
             if low.endswith(".zip") or "downloadcalendriertempo" in low:
                 download_links.append(href)
 
-        print(f"🔗 {len(download_links)} liens détectés (ZIP + Tempo).")
+        logger.info(f"🔗 {len(download_links)} liens détectés (ZIP + Tempo).")
 
         for url in download_links:
             parsed = urlparse(url)
             name = os.path.basename(parsed.path)
             
             # --- Traitement ZIP ---
-            print(f"⬇️  Téléchargement ZIP : {name}")
+            logger.info(f"⬇️  Téléchargement ZIP : {name}")
             resp = requests.get(url)
             resp.raise_for_status()
             with ZipFile(BytesIO(resp.content)) as zf:
@@ -67,7 +71,7 @@ def fetch_eCO2mix_data(destination_folder="../data/external/"):
                     out_path = os.path.join(destination_folder, fname)
                     with zf.open(member) as src, open(out_path, "wb") as dst:
                         dst.write(src.read())
-            print(f"✅ Contenu de {name} extrait dans {destination_folder}")
+            logger.info(f"✅ Contenu de {name} extrait dans {destination_folder}")
 
     finally:
         driver.quit()
@@ -125,7 +129,7 @@ def convert_xls_eCO2mix_to_csv(input_path, output_path):
     with open(output_path, 'w', encoding='utf-8') as f:
         f.writelines(cleaned_lines)
 
-    print(f"✅ Fichier converti et nettoyé : {output_path}")
+    logger.info(f"✅ Fichier converti et nettoyé : {output_path}")
 
 def convert_all_xls_eCO2mix_data(xls_path, csv_path):
     """
@@ -161,7 +165,7 @@ def load_data(filepath, encoding='utf-8', sep=","):
         data = pd.read_csv(filepath, sep=sep, encoding=encoding, low_memory=False, dtype=str)
         return data
     except Exception as e:
-        print(f"Erreur lors du chargement des données : {e}")
+        logger.error(f"Erreur lors du chargement des données : {e}")
         return None
 
 def preprocess_annual_data(df):
@@ -244,9 +248,9 @@ def concat_eCO2mix_annual_data(path_annual):
     # Assertion pour vérifier que tous les fichiers existent
     missing_files = [f for f in annual_files if not os.path.isfile(f)]
     assert not missing_files, f"Fichiers manquants : {missing_files}"
-    print("Lecture des fichiers annuels :")
+    logger.info("Lecture des fichiers annuels :")
     for file in annual_files:
-        print("  -", file)
+        logger.info("  -", file)
         
         df = load_data(file, encoding="utf-8")
         if df is not None:
@@ -274,15 +278,15 @@ def concat_eCO2mix_tempo_data(path_tempo):
     # Assertion pour vérifier que tous les fichiers existent
     assert tempo_files, f"Aucun fichier trouvé avec le pattern : {tempo_pattern}"
     
-    print("Lecture des fichiers tempo :")
+    logger.info("Lecture des fichiers tempo :")
     for file in tempo_files:
-        print("  -", file)
+        logger.info("  -", file)
         try:
             df = load_data(file, encoding="utf-8")
             # Vous pouvez également ajouter des transformations propres aux fichiers tempo ici si nécessaire
             list_df_tempo.append(df)
         except Exception as e:
-            print(f"Erreur lors de la lecture du fichier {file}: {e}")
+            logger.error(f"Erreur lors de la lecture du fichier {file}: {e}")
     df_tempo = pd.concat(list_df_tempo, axis=0, ignore_index=True)
     return df_tempo
 
