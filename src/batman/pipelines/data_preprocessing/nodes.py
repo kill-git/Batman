@@ -3,6 +3,8 @@
 from batman.core.data_preprocessing import (
     concat_eCO2mix_annual_data,
     concat_eCO2mix_tempo_data,
+    preprocess_annual_data,
+    preprocess_tempo_data,
     merge_eCO2mix_data,
     preprocess_eCO2mix_data
 )
@@ -30,6 +32,30 @@ def concat_tempo_node(path_tempo: str):
         DataFrame contenant les données Tempo concaténées
     """
     return concat_eCO2mix_tempo_data(path_tempo)
+
+def preprocess_annual_node(annual_df):
+    """
+    Node pour prétraiter les données annuelles
+    
+    Args:
+        annual_df: DataFrame des données annuelles à prétraiter
+        
+    Returns:
+        DataFrame prétraité
+    """
+    return preprocess_annual_data(annual_df)
+
+def preprocess_tempo_node(tempo_df):
+    """
+    Node pour prétraiter les données Tempo
+    
+    Args:
+        tempo_df: DataFrame des données Tempo à prétraiter
+        
+    Returns:
+        DataFrame prétraité
+    """
+    return preprocess_tempo_data(tempo_df)
 
 def merge_data_node(annual_df, tempo_df):
     """

@@ -268,7 +268,7 @@ def concat_eCO2mix_tempo_data(path_tempo):
     Retourne :
     - DataFrame concaténé.
     """
-    tempo_pattern = os.path.join(path_tempo, "*.csv")
+    tempo_pattern = os.path.join(path_tempo, "eCO2mix_RTE_tempo*.csv")
     tempo_files = sorted(glob.glob(tempo_pattern))
     list_df_tempo = []
     # Assertion pour vérifier que tous les fichiers existent
@@ -304,6 +304,7 @@ def merge_eCO2mix_data(df_annual, df_tempo):
     df_annual['Date'] = pd.to_datetime(df_annual['Date'], errors='coerce', format="%Y-%m-%d")
     
     merged_df = pd.merge(df_annual, df_tempo, on='Date', how='left')
+    
     return merged_df
 
 def preprocess_eCO2mix_data(df):

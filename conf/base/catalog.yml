@@ -7,6 +7,14 @@ tempo_data:
   type: kedro_datasets.pandas.ParquetDataset
   filepath: data/02_intermediate/tempo_data.parquet
 
+annual_data_preprocessed:
+  type: kedro_datasets.pandas.ParquetDataset
+  filepath: data/02_intermediate/annual_data_preprocessed.parquet
+
+tempo_data_preprocessed:
+  type: kedro_datasets.pandas.ParquetDataset
+  filepath: data/02_intermediate/tempo_data_preprocessed.parquet
+
 merged_data_raw:
   type: kedro_datasets.pandas.ParquetDataset
   filepath: data/02_intermediate/merged_data_raw.parquet
