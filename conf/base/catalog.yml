@@ -1,11 +1,11 @@
 # Data Preprocessing
 annual_data:
   type: kedro_datasets.pandas.ParquetDataset
-  filepath: data/01_raw/annual_data.parquet
+  filepath: data/02_intermediate/annual_data.parquet
 
 tempo_data:
   type: kedro_datasets.pandas.ParquetDataset
-  filepath: data/01_raw/tempo_data.parquet
+  filepath: data/02_intermediate/tempo_data.parquet
 
 merged_data_raw:
   type: kedro_datasets.pandas.ParquetDataset
@@ -13,16 +13,16 @@ merged_data_raw:
 
 merged_data:
   type: kedro_datasets.pandas.ParquetDataset
-  filepath: data/02_intermediate/merged_data.parquet
+  filepath: data/03_primary/merged_data.parquet
 
 # Feature Engineering
 features_raw:
   type: kedro_datasets.pandas.ParquetDataset
-  filepath: data/02_intermediate/features_raw.parquet
+  filepath: data/04_feature/features_raw.parquet
 
 final_data:
   type: kedro_datasets.pandas.ParquetDataset
-  filepath: data/03_primary/final_data.parquet
+  filepath: data/04_feature/final_data.parquet
 
 # Training
 trained_model:
