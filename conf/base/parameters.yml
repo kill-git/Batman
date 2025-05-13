@@ -1,7 +1,7 @@
 # data_download
-xls_path: data/01_raw/
-csv_path: data/02_intermediate/
-destination_folder: data/01_raw/
+destination_folder: "data/01_raw"  # Utilisé pour le stockage temporaire avant l'upload MinIO
+xls_path: "data/01_raw"
+csv_path: "data/02_intermediate"
 
 # data_preprocessing
 path_annual: data/02_intermediate/
