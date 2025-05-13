@@ -1,11 +1,11 @@
 # data_download
 xls_path: data/01_raw/
-csv_path: data/01_raw/
+csv_path: data/02_intermediate/
 destination_folder: data/01_raw/
 
 # data_preprocessing
-path_annual: data/01_raw/
-path_tempo: data/01_raw/
+path_annual: data/02_intermediate/
+path_tempo: data/02_intermediate/
 
 # training
 train:
