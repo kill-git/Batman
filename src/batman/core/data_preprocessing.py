@@ -332,7 +332,7 @@ def preprocess_eCO2mix_data(df):
     df = df.dropna(subset=['Type de jour TEMPO_BLEU', 'Type de jour TEMPO_BLANC', 'Type de jour TEMPO_ROUGE'], how='all')
     
     # Indexe par Datetime
-    df.set_index('Datetime', inplace=True)
+    # df.set_index('Datetime', inplace=True) # Non necessaire, artefact d'une ancienne implémentation
     
     return df
 
