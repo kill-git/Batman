@@ -1,0 +1,141 @@
+eco2mix_raw_zip:
+  type: batman.datasets.ZipDataset
+  filepath: data/01_raw/eco2mix_collected.zip
+  versioned: true
+
+eco2mix_converted_zip:
+  type: batman.datasets.ZipDataset
+  filepath: data/02_intermediate/eco2mix_converted.zip
+  versioned: true
+
+# --- Datasets intermédiaires générés après concaténation ---
+annual_data:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/annual_data.parquet
+  versioned: true
+
+tempo_data:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/tempo_data.parquet
+  versioned: true
+
+# --- Datasets après preprocessing ---
+annual_data_preprocessed:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/annual_data_preprocessed.parquet
+  versioned: true
+# --- Datasets après nettoyage ---
+tempo_data_preprocessed:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/tempo_data_preprocessed.parquet
+  versioned: true
+# --- Données fusionnées (brutes puis nettoyées) ---
+merged_data_raw:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/merged_data_raw.parquet
+  versioned: true
+
+merged_data:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/merged_data.parquet
+  versioned: true
+
+# Feature Engineering outputs
+features_raw:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/features_raw.parquet
+  versioned: true
+
+final_data:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/final_data.parquet
+  versioned: true
+# --- Datasets de validation et de test ---
+X:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/X.parquet
+  versioned: true
+
+y:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/y.parquet
+  versioned: true
+
+X_train:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/X_train.parquet
+  versioned: true
+
+X_test:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/X_test.parquet
+  versioned: true
+
+y_train:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/y_train.parquet
+  versioned: true
+
+
+y_test:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/y_test.parquet
+  versioned: true
+
+scaler:
+  type: pickle.PickleDataset
+  filepath: data/05_model_input/scaler.pkl
+  versioned: true
+
+X_train_scaled:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/X_train_scaled.parquet
+  versioned: true
+
+X_test_scaled:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/X_test_scaled.parquet
+  versioned: true
+
+# --- Modèle ---
+trained_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/trained_model.pkl
+  versioned: true
+
+df_results:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/df_results.parquet
+  versioned: true
+
+# --- Résultats du modèle ---
+prediction_plot:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/prediction_plot.png
+  save_args:
+    dpi: 300
+    bbox_inches: tight
+  versioned: true
+
+residual_plot:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/08_reporting/residual_plot.png
+  save_args:
+    dpi: 300
+    bbox_inches: tight
+  versioned: true
+
+optuna_optimization_history:
+  type: plotly.HTMLDataset
+  filepath: data/08_reporting/optuna_optimization_history.html
+  versioned: true
+
+optuna_param_importances:
+  type: plotly.HTMLDataset
+  filepath: data/08_reporting/optuna_param_importances.html
+  versioned: true
+
+optuna_parallel_coordinates:
+  type: plotly.HTMLDataset
+  filepath: data/08_reporting/optuna_parallel_coordinates.html
+  versioned: true

@@ -1,3 +1,6 @@
+from batman.hooks import mlflow_hook
+
+import kedro
 """Project settings. There is no need to edit this file unless you want to change values
 from the Kedro defaults. For further information, including these default values, see
 https://docs.kedro.org/en/stable/kedro_project_setup/settings.html."""
@@ -28,14 +31,6 @@ https://docs.kedro.org/en/stable/kedro_project_setup/settings.html."""
 # CONFIG_LOADER_CLASS = OmegaConfigLoader
 
 # Keyword arguments to pass to the `CONFIG_LOADER_CLASS` constructor.
-CONFIG_LOADER_ARGS = {
-    "base_env": "base",
-    "default_run_env": "local",
-    # "config_patterns": {
-    #     "spark" : ["spark*/"],
-    #     "parameters": ["parameters*", "parameters*/**", "**/parameters*"],
-    # }
-}
 
 # Class that manages Kedro's library components.
 # from kedro.framework.context import KedroContext
@@ -45,6 +40,16 @@ CONFIG_LOADER_ARGS = {
 # from kedro.io import DataCatalog
 # DATA_CATALOG_CLASS = DataCatalog
 
-from batman.hooks import mlflow_hook
 
-HOOKS  = (mlflow_hook,)
+HOOKS = (mlflow_hook, )
+
+CONFIG_LOADER_ARGS = {
+    "base_env": "base",  # Contenu de conf/base/ toujours chargé
+    "default_run_env": "dev",  # Environnement par défaut = conf/dev/
+    "config_patterns": {
+        "parameters": ["parameters*", "parameters*/**", "**/parameters*"],
+        "catalog": ["catalog*", "catalog*/**", "**/catalog*"],
+        "credentials": ["credentials*", "credentials*/**", "**/credentials*"],
+        "logging": ["logging*", "logging*/**", "**/logging*"]
+    },
+}
