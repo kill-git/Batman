@@ -3,8 +3,8 @@ from .nodes import concat_annual_node, concat_tempo_node, preprocess_annual_node
 
 def create_pipeline(**kwargs):
     return Pipeline([
-        node(concat_annual_node, inputs="params:path_annual", outputs="annual_data", name="concat_annual"),
-        node(concat_tempo_node, inputs="params:path_tempo", outputs="tempo_data", name="concat_tempo"),
+        node(concat_annual_node, inputs="eco2mix_converted_zip", outputs="annual_data", name="concat_annual"),
+        node(concat_tempo_node, inputs="eco2mix_converted_zip", outputs="tempo_data", name="concat_tempo"),
         node(preprocess_annual_node, inputs="annual_data", outputs="annual_data_preprocessed", name="preprocess_annual"),
         node(preprocess_tempo_node, inputs="tempo_data", outputs="tempo_data_preprocessed", name="preprocess_tempo"),
         node(merge_data_node, inputs=["annual_data_preprocessed", "tempo_data_preprocessed"], outputs="merged_data_raw", name="merge"),

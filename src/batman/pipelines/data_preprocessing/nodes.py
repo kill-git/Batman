@@ -1,4 +1,8 @@
 # nodes.py
+import tempfile
+import zipfile
+import os
+from pathlib import Path
 
 from batman.core.data_preprocessing import (
     concat_eCO2mix_annual_data,
@@ -9,29 +13,35 @@ from batman.core.data_preprocessing import (
     preprocess_eCO2mix_data
 )
 
-def concat_annual_node(path_annual: str):
+def concat_annual_node(zip_path: Path):
     """
     Node pour concaténer les données annuelles eCO2mix
     
     Args:
-        path_annual: Chemin vers les fichiers de données annuelles
-        
+        zip_path: Chemin vers le fichier zip contenant les données annuelles
+
     Returns:
         DataFrame contenant les données annuelles concaténées
     """
-    return concat_eCO2mix_annual_data(path_annual)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            zf.extractall(temp_dir)
+        return concat_eCO2mix_annual_data(temp_dir)
 
-def concat_tempo_node(path_tempo: str):
+def concat_tempo_node(zip_path: Path):
     """
     Node pour concaténer les données Tempo (RTE)
     
     Args:
-        path_tempo: Chemin vers les fichiers de données Tempo
-        
+        zip_path: Chemin vers le fichier zip contenant les données Tempo
+
     Returns:
         DataFrame contenant les données Tempo concaténées
     """
-    return concat_eCO2mix_tempo_data(path_tempo)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            zf.extractall(temp_dir)
+        return concat_eCO2mix_tempo_data(temp_dir)
 
 def preprocess_annual_node(annual_df):
     """
