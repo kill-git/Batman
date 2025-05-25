@@ -9,53 +9,63 @@ from batman.core.optuna_optimization import optimize_model_with_optuna, generate
 from batman.core.run_logger import log_run
 
 import pandas as pd
-import joblib
 
-def train_linear_model(X, y):
-    model = LinearRegression()
-    model.fit(X, y)
-    return model
+import logging
 
-def train_ridge_model(X, y, alpha=1.0):
-    model = Ridge(alpha=alpha)
-    model.fit(X, y)
-    return model
+logger = logging.getLogger(__name__)
 
-def train_lasso_model(X, y, alpha=0.1):
-    model = Lasso(alpha=alpha)
-    model.fit(X, y)
-    return model
 
-def train_random_forest(X, y, n_estimators=100, random_state=42):
-    model = RandomForestRegressor(n_estimators=n_estimators, random_state=random_state)
-    model.fit(X, y)
-    return model
-
-def train_knn_model(X, y, n_neighbors=5):
-    model = KNeighborsRegressor(n_neighbors=n_neighbors)
-    model.fit(X, y)
-    return model
-
-def train_xgboost_model(X, y, n_estimators=100, learning_rate=0.1, max_depth=3):
-    model = xgb.XGBRegressor(n_estimators=n_estimators, learning_rate=learning_rate, max_depth=max_depth)
-    model.fit(X, y)
-    return model
-
-def save_model(model, filename):
-    joblib.dump(model, filename)
-
-def get_all_models(X, y):
+def build_linear_model(**params):
     """
-    Entraîne tous les modèles définis et retourne un dictionnaire nom -> modèle entraîné.
+    Retourne un LinearRegression avec les paramètres passés.
     """
-    models = {
-        "LinearRegression": train_linear_model(X, y),
-        "Ridge": train_ridge_model(X, y),
-        "Lasso": train_lasso_model(X, y),
-        "RandomForest": train_random_forest(X, y),
-        "KNN": train_knn_model(X, y),
+    return LinearRegression(**params)
+
+def build_ridge_model(**params):
+    """
+    Retourne un Ridge avec les paramètres passés.
+    """
+    return Ridge(**params)
+
+def build_lasso_model(**params):
+    """
+    Retourne un Lasso avec les paramètres passés.
+    """
+    return Lasso(**params)
+
+def build_random_forest_model(**params):
+    """
+    Retourne un RandomForestRegressor avec les paramètres passés.
+    """
+    return RandomForestRegressor(**params)
+
+def build_knn_model(**params):  
+    """
+    Retourne un KNeighborsRegressor avec les paramètres passés.
+    """
+    return KNeighborsRegressor(**params)
+
+def build_xgboost_model(**params):
+    return xgb.XGBRegressor(**params)
+
+
+def get_model_function(model_type):
+    """
+    Retourne la fonction d'entraînement du modèle selon le type spécifié.
+    """
+    model_functions = {
+        "linear": build_linear_model,
+        "ridge": build_ridge_model,
+        "lasso": build_lasso_model,
+        "random_forest": build_random_forest_model,
+        "knn": build_knn_model,
+        "xgboost": build_xgboost_model
     }
-    return models
+    
+    if model_type not in model_functions:
+        raise ValueError(f"Type de modèle inconnu : {model_type}. Options disponibles : {list(model_functions.keys())}")
+    
+    return model_functions[model_type]
 
 def full_train_evaluate_pipeline(
     model_fn,
@@ -63,20 +73,15 @@ def full_train_evaluate_pipeline(
     y,
     params=None,
     search_space_fn=None,
-    threshold_rmse=300,
     use_optuna=False,
+    storage_url=None,
     n_trials=20,
     n_splits=5,
-    run_name=None,
-    storage_url=None,
+    run_name="default_run",
     validation_type="time_series_cv",  # "time_series_cv" ou "walk_forward"
     walkforward_initial_train_size=3000,
     walkforward_test_size=24,
-    max_train_size=None,
-    generate_report=True,
-    datetimes=None,
-    X_test=None,
-    y_test=None
+    max_train_size=None
 ):
     """
     Pipeline complet d'entraînement, validation, logging, et rapport visuel.
@@ -95,9 +100,6 @@ def full_train_evaluate_pipeline(
     - validation_type : "time_series_cv" ou "walk_forward".
     - walkforward_initial_train_size : taille initiale pour walk-forward.
     - walkforward_test_size : taille du test dans walk-forward.
-    - generate_report : générer un rapport complet.
-    - datetimes : index datetime pour le rapport.
-    - X_test, y_test : données test pour le rapport.
 
     Retourne :
     - modèle entraîné final
@@ -111,9 +113,14 @@ def full_train_evaluate_pipeline(
         if search_space_fn is None:
             raise ValueError("Un search_space_fn doit être fourni pour utiliser Optuna.")
         best_params, optuna_study = optimize_model_with_optuna(
-            model_fn, X, y, search_space_fn,
-            n_trials=n_trials, n_splits=n_splits, storage_url=storage_url, study_name=run_name
-        )
+                                        model_fn, 
+                                        X, y, 
+                                        search_space_fn,
+                                        n_trials=n_trials, 
+                                        n_splits=n_splits, 
+                                        storage_url=storage_url, 
+                                        study_name=run_name
+                                    )
         model = model_fn(**best_params)
     else:
         model = model_fn(**(params or {}))
@@ -137,37 +144,17 @@ def full_train_evaluate_pipeline(
     df_cv = pd.DataFrame(cv_results)
     mean_rmse_final = df_cv['RMSE'].mean()
 
-    print("\n--- Résultats Validation Croisée Finale ---")
-    print_evaluation_metrics({'Mean RMSE Final': mean_rmse_final})
+    logger.info("\n--- Résultats Validation Croisée Finale ---")
 
     if optuna_study:
-        print("\n--- Résultats pendant Optimisation Optuna ---")
-        print(f"Meilleur RMSE trouvé pendant Optuna : {optuna_study.best_value:.4f}")
-
-    # Logging
-    run_info = {
-        "run_name": run_name or "Unnamed_Run",
-        "model_name": model.__class__.__name__,
-        "use_optuna": use_optuna,
-        "params": best_params if use_optuna else params,
-        "mean_rmse_final": mean_rmse_final,
-        "optuna_best_rmse": optuna_study.best_value if optuna_study else None,
-        "cv_results": cv_results
-    }
-    log_run(run_info)
-
-    if mean_rmse_final <= threshold_rmse:
-        print(f"✅ RMSE {mean_rmse_final:.2f} sous le seuil {threshold_rmse}, modèle à sauvegarder.")
+        logger.info("\n--- Résultats pendant Optimisation Optuna ---")
+        logger.info(f"Meilleur RMSE trouvé pendant Optuna pour {run_name}: {optuna_study.best_value:.4f}")
+        logger.info(f"Meilleurs paramètres trouvés pendant Optuna pour {run_name}: {optuna_study.best_params}")
     else:
-        print(f"❌ RMSE {mean_rmse_final:.2f} au-dessus du seuil {threshold_rmse}, modèle NON sauvegardé.")
+        logger.info("\n--- Pas d'optimisation Optuna ---")
+        logger.info(f"RMSE Final pour {run_name}: {mean_rmse_final:.4f}")
+        logger.info(f"Paramètres utilisés pour {run_name}: {params if params else 'Aucun'}")
 
     model.fit(X, y)
-    
-    # Génération du rapport
-    if generate_report:
-        last_split_idx = -walkforward_test_size if validation_type == "walk_forward" else -1
-        X_eval = X_test if X_test is not None and y_test is not None else X.iloc[last_split_idx:]
-        y_eval = y_test if X_test is not None and y_test is not None else y.iloc[last_split_idx:]
-        generate_full_report(model, X_eval, y_eval, study=optuna_study, datetimes=datetimes)
 
-    return model, cv_results
+    return model, df_cv

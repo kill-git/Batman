@@ -291,6 +291,8 @@ def plot_model_predictions(
         Styles de ligne pour les courbes réelle et prédite.
     """
     # Convertir en Series
+    y_true = y_true.iloc[:, 0]
+    
     y_true = pd.Series(y_true).reset_index(drop=True)
     y_pred = pd.Series(y_pred).reset_index(drop=True)
     
@@ -313,7 +315,7 @@ def plot_model_predictions(
         "Prédiction": y_pred
     })
 
-    plt.figure(figsize=figsize)
+    fig = plt.figure(figsize=figsize)
     sns.lineplot(data=df_plot, x="Date", y="Réel", label="Réel", color=color_true, linestyle=linestyle_true)
     sns.lineplot(data=df_plot, x="Date", y="Prédiction", label="Prédiction", color=color_pred, linestyle=linestyle_pred)
 
@@ -324,7 +326,7 @@ def plot_model_predictions(
     plt.grid(True)
     plt.tight_layout()
     plt.legend()
-    plt.show()
+    return fig
     
 
 def plot_residual_errors(y_true, y_pred, title="Erreurs Résiduelles"):
@@ -340,11 +342,15 @@ def plot_residual_errors(y_true, y_pred, title="Erreurs Résiduelles"):
         Titre du graphique.
     
     """
+    # Convertir en Series
+    y_true = y_true.iloc[:, 0]
+    
     residuals = y_true - y_pred
 
-    plt.figure(figsize=(12, 4))
+    fig = plt.figure(figsize=(12, 4))
     sns.histplot(residuals, bins=50, kde=True)
     plt.title(title)
     plt.xlabel("Erreur (y_test - y_pred)")
     plt.grid(True)
-    plt.show()
+    return fig
+    

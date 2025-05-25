@@ -12,11 +12,14 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.model_selection import train_test_split
+
 import logging
 
 logger = logging.getLogger(__name__)
 
-def fetch_eCO2mix_data(destination_folder="../data/external/"):
+def fetch_eCO2mix_data(destination_folder: str = "../data/external/") -> None:
     """
     Télécharge et extrait tous les fichiers ZIP de la div .eco2mix-download-data
     sur la page des indicateurs éCO2mix de RTE.
@@ -76,7 +79,7 @@ def fetch_eCO2mix_data(destination_folder="../data/external/"):
     finally:
         driver.quit()
 
-def convert_xls_eCO2mix_to_csv(input_path, output_path):
+def convert_xls_eCO2mix_to_csv(input_path: str, output_path: str) -> None:
     """
     Convertit un fichier .xls (format texte tabulé) en .csv propre.
 
@@ -131,7 +134,7 @@ def convert_xls_eCO2mix_to_csv(input_path, output_path):
 
     logger.info(f"✅ Fichier converti et nettoyé : {output_path}")
 
-def convert_all_xls_eCO2mix_data(xls_path, csv_path):
+def convert_all_xls_eCO2mix_data(xls_path: str, csv_path: str) -> None:
     """
     Convertit tous les fichiers .xls dans le dossier d'entrée en fichiers .csv nettoyés.
     Paramètre : 
@@ -149,7 +152,7 @@ def convert_all_xls_eCO2mix_data(xls_path, csv_path):
         convert_xls_eCO2mix_to_csv(xls_path, out_path)
         raw_csv_paths.append(out_path)
 
-def load_data(filepath, encoding='utf-8', sep=","):
+def load_data(filepath: str, encoding: str = 'utf-8', sep: str = ",") -> pd.DataFrame:
     """
     Charge les données depuis un fichier TXT avec des champs séparés par une tabulation,
     et convertit la colonne de date.
@@ -166,9 +169,9 @@ def load_data(filepath, encoding='utf-8', sep=","):
         return data
     except Exception as e:
         logger.error(f"Erreur lors du chargement des données : {e}")
-        return None
+        raise e
 
-def preprocess_annual_data(df):
+def preprocess_annual_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     Prétraite les données annuelles :
     - Convertit la colonne 'Date' & 'Heure' en 'Datetime'.
@@ -193,10 +196,13 @@ def preprocess_annual_data(df):
     # Supprimer les colonnes inutiles
     columns_to_drop = df.columns.difference(['Date', 'Heures', 'Datetime', 'Consommation'])
     df = df.drop(columns=columns_to_drop, errors='ignore', axis=1)
+    before = len(df)
     df = df.dropna(subset=['Consommation'])
+    after = len(df)
+    logger.info(f"⚠️  Suppression de {before - after} lignes sans consommation.")
     return df
 
-def one_hot_encode(df, column):
+def one_hot_encode(df: pd.DataFrame, column: str) -> pd.DataFrame:
     """
     Effectue un encodage one-hot sur une colonne donnée d'un DataFrame.
 
@@ -215,7 +221,7 @@ def one_hot_encode(df, column):
     df = pd.concat([df, one_hot], axis=1)
     return df
 
-def preprocess_tempo_data(df):
+def preprocess_tempo_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     Prétraite la donnée TEMPO de eCO2mix : 
     - Applique le one-hot encoding sur la colonne TEMPO (i.e 'Type de jour TEMPO').
@@ -230,7 +236,7 @@ def preprocess_tempo_data(df):
     df['Date'] = pd.to_datetime(df['Date'], errors='coerce', format="%Y-%m-%d")
     return one_hot_encode(df, 'Type de jour TEMPO')
 
-def concat_eCO2mix_annual_data(path_annual):
+def concat_eCO2mix_annual_data(path_annual: str) -> pd.DataFrame:
     """
     Concatène tous les fichiers annuels de eCO2mix dans un seul DataFrame.
 
@@ -250,8 +256,8 @@ def concat_eCO2mix_annual_data(path_annual):
     assert not missing_files, f"Fichiers manquants : {missing_files}"
     logger.info("Lecture des fichiers annuels :")
     for file in annual_files:
-        logger.info("  -", file)
-        
+        logger.info(f"  - {file}")
+
         df = load_data(file, encoding="utf-8")
         if df is not None:
             # Vous pouvez également ajouter des transformations propres aux fichiers annuels ici si nécessaire
@@ -263,7 +269,7 @@ def concat_eCO2mix_annual_data(path_annual):
     df_annual.reset_index(drop=True, inplace=True)
     return df_annual
 
-def concat_eCO2mix_tempo_data(path_tempo):
+def concat_eCO2mix_tempo_data(path_tempo: str) -> pd.DataFrame:
     """
     Concatène tous les fichiers TEMPO de eCO2mix dans un seul DataFrame.
     Paramètres :
@@ -280,7 +286,7 @@ def concat_eCO2mix_tempo_data(path_tempo):
     
     logger.info("Lecture des fichiers tempo :")
     for file in tempo_files:
-        logger.info("  -", file)
+        logger.info(f"  - {file}")
         try:
             df = load_data(file, encoding="utf-8")
             # Vous pouvez également ajouter des transformations propres aux fichiers tempo ici si nécessaire
@@ -290,7 +296,7 @@ def concat_eCO2mix_tempo_data(path_tempo):
     df_tempo = pd.concat(list_df_tempo, axis=0, ignore_index=True)
     return df_tempo
 
-def merge_eCO2mix_data(df_annual, df_tempo):
+def merge_eCO2mix_data(df_annual: pd.DataFrame, df_tempo: pd.DataFrame) -> pd.DataFrame:
     """
     Fusionne les données annuelles et TEMPO sur la colonne 'Date'.
 
@@ -311,7 +317,7 @@ def merge_eCO2mix_data(df_annual, df_tempo):
     
     return merged_df
 
-def preprocess_eCO2mix_data(df):
+def preprocess_eCO2mix_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     Prétraite les données fusionnées de eCO2mix :
     - Supprime les lignes ou il existe aucune valeur dans les colonnes 'Type de jour TEMPO_BLEU', 'Type de jour TEMPO_BLANC', 'Type de jour TEMPO_ROUGE'.
@@ -324,19 +330,23 @@ def preprocess_eCO2mix_data(df):
     - DataFrame prétraité.
     """
     assert 'Datetime' in df.columns, "La colonne 'Datetime' est requise."
+    assert 'Consommation' in df.columns, "La colonne 'Consommation' est requise."
     assert 'Type de jour TEMPO_BLEU' in df.columns, "La colonne 'Type de jour TEMPO_BLEU' est requise."
     assert 'Type de jour TEMPO_BLANC' in df.columns, "La colonne 'Type de jour TEMPO_BLANC' est requise."
     assert 'Type de jour TEMPO_ROUGE' in df.columns, "La colonne 'Type de jour TEMPO_ROUGE' est requise."
     
     # Supprime les lignes où il n'y a aucune valeur dans les colonnes TEMPO
+    before = len(df)
     df = df.dropna(subset=['Type de jour TEMPO_BLEU', 'Type de jour TEMPO_BLANC', 'Type de jour TEMPO_ROUGE'], how='all')
-    
+    after = len(df)
+    logger.info(f"⚠️  Suppression de {before - after} lignes sans type de jour TEMPO.")
+    df['Consommation'] = pd.to_numeric(df['Consommation'], errors='coerce')
     # Indexe par Datetime
     # df.set_index('Datetime', inplace=True) # Non necessaire, artefact d'une ancienne implémentation
     
     return df
 
-def preprocess_eCO2mix_data_engineered(df):
+def preprocess_eCO2mix_data_engineered(df: pd.DataFrame) -> pd.DataFrame:
     """
     Prétraite les données de eCO2mix après ingénierie des caractéristiques :
         - Supprime les lignes qui ne possède pas les données features lag, rolling mean vide.
@@ -350,6 +360,65 @@ def preprocess_eCO2mix_data_engineered(df):
     assert engineered_cols, "Aucune colonne d'ingénierie détectée dans le DataFrame."
 
     # Suppression des lignes contenant des NaN dans les colonnes d'ingénierie
+    before = len(df)
     df_cleaned = df.dropna(subset=engineered_cols)
+    after = len(df_cleaned)
+    logger.info(f"⚠️  Suppression de {before - after} lignes sans données d'ingénierie.")
     return df_cleaned
+
+def split_features_target(data: pd.DataFrame, target: str) -> tuple:
+    """
+    Sépare les caractéristiques et la cible dans un DataFrame.
+    """
+    assert target in data.columns, f"La colonne cible '{target}' n'existe pas dans le DataFrame."
+    assert 'Datetime' in data.columns, "La colonne 'Datetime' est requise pour l'indexation."
+    assert 'Date' in data.columns, "La colonne 'Date' est requise pour la séparation des caractéristiques."
+    assert 'Heures' in data.columns, "La colonne 'Heures' est requise pour la séparation des caractéristiques."
     
+    # Trie par ordre chronologique
+    data['Datetime'] = pd.to_datetime(data['Datetime'], errors='coerce')
+    data_sorted = data.sort_values("Datetime").copy()
+    
+    X = data_sorted.drop(columns=[target, "Date", "Heures", "Datetime"], errors="ignore")
+    for col in X.columns:
+        try:
+            X[col] = pd.to_numeric(X[col], errors='coerce')
+        except Exception:
+            logger.warning(f"⚠️ La colonne '{col}' ne peut pas être convertie en numerique. Elle reste de type {X[col].dtype}")
+            
+    y = pd.DataFrame(data_sorted[target])
+    y.columns = [target]
+    y = y.astype("float32")
+    logger.info(f"🔧 Données triées par 'Datetime'. Séparation X (shape={X.shape}) / y (len={len(y)})")
+    return X, y
+
+def split_train_test(X: pd.DataFrame, y: pd.DataFrame, test_size: float = 0.2) -> tuple:
+    """
+    Sépare les données en ensembles d'entraînement et de test.
+    """
+    n_samples = len(X)
+    split_index = int(n_samples * (1 - test_size))
+
+    X_train, X_test = X.iloc[:split_index], X.iloc[split_index:]
+    y_train, y_test = y.iloc[:split_index], y.iloc[split_index:]
+    y_train = pd.DataFrame(y_train).reset_index(drop=True)
+    y_test = pd.DataFrame(y_test).reset_index(drop=True)
+    
+    return X_train, X_test, y_train, y_test
+
+def normalize_features(X_train: pd.DataFrame, X_test: pd.DataFrame, method: str = "standard") -> tuple:
+    """
+    Normalise les caractéristiques d'entraînement et de test.
+    """
+    if method == "standard":
+        scaler = StandardScaler()
+    elif method == "minmax":
+        scaler = MinMaxScaler()
+    else:
+        raise ValueError(f"Méthode de normalisation inconnue : {method}")
+    
+    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns, index=X_train.index)
+    X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns, index=X_test.index)
+
+    logger.info(f"🔧 Normalisation des données avec {method} scaling.")
+    return X_train_scaled, X_test_scaled, scaler

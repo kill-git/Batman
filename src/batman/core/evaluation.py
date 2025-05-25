@@ -2,6 +2,7 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.base import clone
 import numpy as np
+import pandas as pd
 
 def evaluate_model(model, X_test, y_test):
     """
@@ -21,6 +22,13 @@ def evaluate_model(model, X_test, y_test):
     - Dictionnaire contenant les métriques évaluées.
     """
     predictions = model.predict(X_test)
+    
+    if isinstance(y_test, pd.DataFrame):
+        if y_test.shape[1] == 1:
+            y_test = y_test.iloc[:, 0]
+        else:
+            raise ValueError("y_test contient plusieurs colonnes, une seule colonne est attendue.")
+    
     r2 = r2_score(y_test, predictions)
     rmse = np.sqrt(mean_squared_error(y_test, predictions))
     mae = mean_absolute_error(y_test, predictions)
