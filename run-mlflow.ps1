@@ -16,4 +16,4 @@ if (-not (Test-Path $mlflowStorage)) {
 
 # Lance MLflow UI avec ce dossier comme backend
 Write-Host "Lancement de MLflow UI à l'adresse http://127.0.0.1:5000"
-mlflow ui --backend-store-uri "file:///$mlflowStorage" --port 5000
+mlflow ui --backend-store-uri "file:///$mlflowStorage" --port 5001

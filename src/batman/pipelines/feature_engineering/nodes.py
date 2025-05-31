@@ -12,7 +12,7 @@ def final_feature_cleaning_node(df):
 def create_features_node(df):
     df = create_date_features(df, date_column='Date')
     df = create_hour_features(df)
-    df = create_lag_features(df, target_column='Consommation', lags=[1, 2, 24])
+    df = create_lag_features(df, target_column='Consommation', lags=[1, 2, 3])
     df = create_rolling_features(df, target_column='Consommation', window=3)
     return df
 

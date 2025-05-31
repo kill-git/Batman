@@ -4,6 +4,7 @@ from batman.core.optuna_optimization import get_search_space, generate_full_repo
 from batman.core.evaluation import evaluate_model
 
 import mlflow
+from mlflow.tracking import MlflowClient
 import mlflow.sklearn
 import mlflow.xgboost
 from mlflow.models.signature import infer_signature
@@ -22,13 +23,22 @@ def split_train_test_node(X, y, test_size):
 def normalize_features_node(X_train, X_test, method):
     X_train_scaled, X_test_scaled, scaler = normalize_features(X_train, X_test, method)
     # Log the scaler model
+    scaler_name = f"Scaler_{method}"
     mlflow.sklearn.log_model(
             sk_model=scaler,
             artifact_path="scaler",
-            registered_model_name=f"Scaler_{method}",
+            registered_model_name= scaler_name,
             signature=infer_signature(X_test, X_test_scaled),
             input_example=X_test.iloc[:1]
         )
+    client = MlflowClient()
+    version = client.get_latest_versions(scaler_name, stages=["None"])[-1].version
+
+    # Ajoute un alias (si souhaité)
+    client.set_registered_model_alias(scaler_name, "prod", version)
+
+    # Ajoute un tag pour méthode utilisée
+    client.set_model_version_tag(scaler_name, version, "method", method)
     logger.info("🔒 Scaler sauvegardé dans Kedro et loggé dans MLflow.")
     return X_train_scaled, X_test_scaled, scaler
 
@@ -97,14 +107,24 @@ def evaluate_model_node(model, X_test, y_test, df_results, params):
             "target": params.get("target", "Consommation"),
             "task": "energy_forecasting",
         })
-
+        model_name = f"EnergyForecastModel_{model_type}"
         mlflow.sklearn.log_model(
             sk_model=model,
             artifact_path="model",
-            registered_model_name=f"EnergyForecastModel_{model_type}",
+            registered_model_name=model_name,
             signature=signature,
             input_example=X_test.iloc[:1]
         )
+        client = MlflowClient()
+        version = client.get_latest_versions(model_name, stages=["None"])[-1].version
+
+        # Ajout alias "prod" si RMSE valide
+        client.set_registered_model_alias(model_name, "prod", version)
+
+        # Tags supplémentaires utiles pour Superman ou MLops
+        client.set_model_version_tag(model_name, version, "task", "energy_forecasting")
+        client.set_model_version_tag(model_name, version, "framework", "sklearn")
+        client.set_model_version_tag(model_name, version, "target", params.get("target", "Consommation"))
         logger.info(f"✅ Modèle {model_type} sauvegardé dans MLflow.")
     else:
         logger.warning(f"❌ RMSE {rmse:.4f} > seuil {threshold}, modèle non loggué dans MLflow.")
