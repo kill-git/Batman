@@ -1,0 +1,89 @@
+Batman
+├─ conf
+│  ├─ README.md
+│  ├─ base
+│  │  ├─ catalog.yml
+│  │  └─ parameters.yml
+│  ├─ dev
+│  │  ├─ catalog.yml
+│  │  ├─ mlflow.yml
+│  │  └─ parameters.yml
+│  ├─ local
+│  │  └─ .gitkeep
+│  ├─ logging.yml
+│  └─ prod
+│     ├─ catalog.yml
+│     └─ parameters.yml
+├─ data
+│  ├─ 02_intermediate
+│  │  └─ .gitkeep
+│  ├─ 03_primary
+│  │  └─ .gitkeep
+│  ├─ 04_feature
+│  │  └─ .gitkeep
+│  ├─ 05_model_input
+│  │  └─ .gitkeep
+│  ├─ 06_models
+│  │  └─ .gitkeep
+│  ├─ 07_model_output
+│  │  └─ .gitkeep
+│  ├─ 08_reporting
+│  │  └─ .gitkeep
+│  └─ optuna
+│     └─ .gitkeep
+├─ docker-compose.yml
+├─ notebooks
+│  ├─ .gitkeep
+│  ├─ data_preprocessing.ipynb
+│  └─ model_evaluation.ipynb
+├─ project-hierarchy.txt
+├─ pyproject.toml
+├─ requirements.txt
+├─ run-mlflow.ps1
+├─ run-mlflow.sh
+├─ src
+│  └─ batman
+│     ├─ __init__.py
+│     ├─ __main__.py
+│     ├─ __pycache__
+│     │  ├─ __init__.cpython-311.pyc
+│     │  ├─ hooks.cpython-311.pyc
+│     │  └─ settings.cpython-311.pyc
+│     ├─ core
+│     │  ├─ data_preprocessing.py
+│     │  ├─ evaluation.py
+│     │  ├─ explainer.py
+│     │  ├─ feature_engineering.py
+│     │  ├─ model_training.py
+│     │  ├─ optuna_optimization.py
+│     │  ├─ run_logger.py
+│     │  └─ utils.py
+│     ├─ datasets
+│     │  ├─ __init__.py
+│     │  └─ zip_dataset.py
+│     ├─ hooks.py
+│     ├─ pipeline_registry.py
+│     ├─ pipelines
+│     │  ├─ __init__.py
+│     │  ├─ data_download
+│     │  │  ├─ __init__.py
+│     │  │  ├─ nodes.py
+│     │  │  └─ pipeline.py
+│     │  ├─ data_preprocessing
+│     │  │  ├─ __init__.py
+│     │  │  ├─ nodes.py
+│     │  │  └─ pipeline.py
+│     │  ├─ feature_engineering
+│     │  │  ├─ __init__.py
+│     │  │  ├─ nodes.py
+│     │  │  └─ pipeline.py
+│     │  └─ training
+│     │     ├─ __init__.py
+│     │     ├─ nodes.py
+│     │     └─ pipeline.py
+│     └─ settings.py
+└─ tests
+   ├─ __init__.py
+   ├─ pipelines
+   │  └─ __init__.py
+   └─ test_run.py
