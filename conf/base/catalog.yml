@@ -1,2 +1,0 @@
-_catalog_config:
-  versioned: true  # Active le versioning via le run_id Kedro

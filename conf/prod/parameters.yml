@@ -1,0 +1,16 @@
+temp_folder: data/tmp
+target: Consommation
+test_size: 0.2
+scaler: standard
+
+train:
+  model_type: xgboost  # ou "lasso", "ridge", "random_forest", etc.
+  model_params: {}
+  n_trials: 100
+  n_splits: 5  
+  use_optuna: True
+  storage_url: sqlite:///data/optuna/optuna_study.db
+  validation_type: time_series_cv
+  walkforward_initial_train_size: 3000
+  walkforward_test_size: 24
+  threshold: 700

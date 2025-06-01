@@ -45,7 +45,7 @@ HOOKS = (mlflow_hook, )
 
 CONFIG_LOADER_ARGS = {
     "base_env": "base",  # Contenu de conf/base/ toujours chargé
-    "default_run_env": "dev",  # Environnement par défaut = conf/dev/
+    "default_run_env": "prod",  # Environnement par défaut = conf/dev/
     "config_patterns": {
         "parameters": ["parameters*", "parameters*/**", "**/parameters*"],
         "catalog": ["catalog*", "catalog*/**", "**/catalog*"],

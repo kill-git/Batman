@@ -35,7 +35,7 @@ tracking:
     pipelines: []
 
   experiment:
-    name: batman_dev
+    name: batman_prod
     create_experiment_kwargs: # will be used only if the experiment does not exist yet and is created.
       artifact_location: s3://mlflow-artifacts # enable to specify an artifact location for the experiment different than the global one for the mlflow server
       tags: {}  # a dict of tags for the experiment

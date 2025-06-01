@@ -1,4 +1,216 @@
-_catalog_config:
+eco2mix_raw_zip:
+  type: batman.datasets.ZipDataset
+  filepath: s3://batman-data/01_raw/eco2mix_collected.zip
   versioned: true
+  credentials: s3
+  fs_args:
+    client_kwargs:
+      endpoint_url: "http://localhost:9000"
+      use_ssl: false
 
-# --- Datasets intermédiaires générés après concaténation ---
+eco2mix_converted_zip:
+  type: batman.datasets.ZipDataset
+  filepath: s3://batman-data/02_intermediate/eco2mix_converted.zip
+  versioned: true
+  fs_args:
+    client_kwargs:
+      endpoint_url: "http://localhost:9000"
+      use_ssl: false
+
+annual_data:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/02_intermediate/annual_data.parquet
+  versioned: true
+  credentials: s3
+  fs_args:
+    endpoint_url: http://localhost:9000
+
+tempo_data:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/02_intermediate/tempo_data.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+annual_data_preprocessed:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/02_intermediate/annual_data_preprocessed.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+tempo_data_preprocessed:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/02_intermediate/tempo_data_preprocessed.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+merged_data_raw:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/02_intermediate/merged_data_raw.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+merged_data:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/03_primary/merged_data.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+features_raw:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/04_feature/features_raw.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+final_data:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/04_feature/final_data.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+X:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/05_model_input/X.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+y:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/05_model_input/y.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+X_train:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/05_model_input/X_train.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+X_test:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/05_model_input/X_test.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+y_train:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/05_model_input/y_train.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+y_test:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/05_model_input/y_test.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+scaler:
+  type: pickle.PickleDataset
+  filepath: s3://batman-data/05_model_input/scaler.pkl
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+X_train_scaled:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/05_model_input/X_train_scaled.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+X_test_scaled:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/05_model_input/X_test_scaled.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+trained_model:
+  type: pickle.PickleDataset
+  filepath: s3://batman-data/06_models/trained_model.pkl
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+df_results:
+  type: pandas.ParquetDataset
+  filepath: s3://batman-data/08_reporting/df_results.parquet
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+prediction_plot:
+  type: matplotlib.MatplotlibWriter
+  filepath: s3://batman-data/08_reporting/prediction_plot.png
+  save_args:
+    dpi: 300
+    bbox_inches: tight
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+residual_plot:
+  type: matplotlib.MatplotlibWriter
+  filepath: s3://batman-data/08_reporting/residual_plot.png
+  save_args:
+    dpi: 300
+    bbox_inches: tight
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+optuna_optimization_history:
+  type: plotly.HTMLDataset
+  filepath: s3://batman-data/08_reporting/optuna_optimization_history.html
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+optuna_param_importances:
+  type: plotly.HTMLDataset
+  filepath: s3://batman-data/08_reporting/optuna_param_importances.html
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
+
+optuna_parallel_coordinates:
+  type: plotly.HTMLDataset
+  filepath: s3://batman-data/08_reporting/optuna_parallel_coordinates.html
+  versioned: true
+  fs_args:
+    endpoint_url: http://localhost:9000
+  credentials: s3
